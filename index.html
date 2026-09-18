@@ -1,0 +1,1804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Computer</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f7f6fb;
+            --card: #ffffff;
+            --text: #151515;
+            --muted: #666666;
+            --border: #dddddd;
+            --button: #222222;
+            --button-text: #ffffff;
+
+            --correct: #16803c;
+            --wrong: #d93025;
+
+            --correct-bg: #eaf8ef;
+            --wrong-bg: #fff0ef;
+
+            --accent: #6c4cff;
+        }
+
+        body.dark {
+            --bg: #121212;
+            --card: #1e1e1e;
+            --text: #f2f2f2;
+            --muted: #aaaaaa;
+            --border: #383838;
+            --button: #f2f2f2;
+            --button-text: #151515;
+
+            --correct: #42c878;
+            --wrong: #ff6b61;
+
+            --correct-bg: #173321;
+            --wrong-bg: #351c1a;
+
+            --accent: #9a86ff;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        /* ---------------- TOP BAR ---------------- */
+
+        .topbar {
+            width: min(690px, calc(100% - 28px));
+            margin: auto;
+            padding-top: 16px;
+            text-align: right;
+        }
+
+        .theme-btn {
+            width: 44px;
+            height: 44px;
+
+            border-radius: 50%;
+            border: 1px solid var(--border);
+
+            background: var(--card);
+            color: var(--text);
+
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* ---------------- CONTAINER ---------------- */
+
+        .container {
+            width: min(690px, calc(100% - 28px));
+            margin: auto;
+            padding: 18px 0 40px;
+        }
+
+        /* ---------------- HOME ---------------- */
+
+        .home {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 44px;
+            margin: 25px 0 8px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 23px;
+            margin-bottom: 42px;
+        }
+
+        /* ---------------- STATS ---------------- */
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+
+            margin-bottom: 36px;
+        }
+
+        .stat {
+            background: var(--card);
+            border-radius: 18px;
+
+            padding: 30px 15px;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+
+            margin-bottom: 12px;
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 20px;
+        }
+
+        /* ---------------- BUTTONS ---------------- */
+
+        button {
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .main-btn {
+            width: 100%;
+
+            border: none;
+            border-radius: 15px;
+
+            padding: 21px;
+
+            background: var(--button);
+            color: var(--button-text);
+
+            font-size: 24px;
+
+            margin-bottom: 18px;
+        }
+
+        .secondary-btn {
+            width: 100%;
+
+            border: 1px solid var(--border);
+            border-radius: 15px;
+
+            padding: 20px;
+
+            background: var(--card);
+            color: var(--text);
+
+            font-size: 22px;
+
+            margin-bottom: 18px;
+        }
+
+        /* ---------------- QUIZ ---------------- */
+
+        .quiz {
+            display: none;
+        }
+
+        .back-btn {
+            border: none;
+            background: transparent;
+
+            color: var(--muted);
+
+            font-size: 16px;
+
+            margin-bottom: 16px;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            color: var(--muted);
+
+            margin-bottom: 16px;
+        }
+
+        .streak {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        /* ---------------- QUESTION CARD ---------------- */
+
+        .question-card {
+            background: var(--card);
+
+            border: 1px solid var(--border);
+            border-radius: 18px;
+
+            padding: 24px;
+        }
+
+        .question-number {
+            color: var(--muted);
+
+            font-size: 15px;
+
+            margin-bottom: 14px;
+        }
+
+        .question {
+            font-size: 23px;
+            line-height: 1.45;
+
+            font-weight: 600;
+
+            margin-bottom: 22px;
+        }
+
+        /* ---------------- OPTIONS ---------------- */
+
+        .option {
+            display: block;
+
+            width: 100%;
+
+            text-align: left;
+
+            padding: 17px;
+
+            margin: 11px 0;
+
+            border: 1px solid var(--border);
+            border-radius: 12px;
+
+            background: var(--card);
+            color: var(--text);
+
+            font-size: 17px;
+
+            line-height: 1.4;
+
+            transition: 0.15s;
+        }
+
+        .option:hover:not(:disabled) {
+            border-color: var(--accent);
+        }
+
+        .option:disabled {
+            cursor: default;
+        }
+
+        .option.correct {
+            border-color: var(--correct);
+            background: var(--correct-bg);
+        }
+
+        .option.wrong {
+            border-color: var(--wrong);
+            background: var(--wrong-bg);
+        }
+
+        /* ---------------- ANSWER RESULT ---------------- */
+
+        .result {
+            display: none;
+
+            margin-top: 20px;
+
+            border-radius: 14px;
+
+            padding: 18px;
+
+            line-height: 1.5;
+        }
+
+        .result.correct {
+            background: var(--correct-bg);
+
+            border: 1px solid var(--correct);
+        }
+
+        .result.wrong {
+            background: var(--wrong-bg);
+
+            border: 1px solid var(--wrong);
+        }
+
+        .result-title {
+            font-size: 21px;
+            font-weight: bold;
+
+            margin-bottom: 8px;
+        }
+
+        .answer-info {
+            white-space: pre-line;
+        }
+
+        /* ---------------- EXPLANATION ---------------- */
+
+        .explanation {
+            margin-top: 16px;
+
+            padding-top: 16px;
+
+            border-top: 1px solid var(--border);
+
+            line-height: 1.6;
+        }
+
+        .explanation-title {
+            font-size: 18px;
+
+            font-weight: bold;
+
+            margin-bottom: 7px;
+        }
+
+        .explanation-text {
+            color: var(--text);
+        }
+
+        /* ---------------- NEXT BUTTON ---------------- */
+
+        .next-btn {
+            display: none;
+
+            width: 100%;
+
+            margin-top: 16px;
+
+            padding: 17px;
+
+            border: none;
+            border-radius: 12px;
+
+            background: var(--button);
+            color: var(--button-text);
+
+            font-size: 19px;
+        }
+
+        /* ---------------- STREAK MESSAGE ---------------- */
+
+        .special-message {
+            display: none;
+
+            text-align: center;
+
+            margin-bottom: 16px;
+
+            padding: 18px;
+
+            border-radius: 15px;
+
+            border: 2px solid var(--accent);
+
+            background: var(--card);
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+            line-height: 1.4;
+        }
+
+        /* ---------------- FINISHED ---------------- */
+
+        .empty {
+            text-align: center;
+
+            padding: 40px 10px;
+
+            color: var(--muted);
+        }
+
+        /* ---------------- MOBILE ---------------- */
+
+        @media (max-width: 600px) {
+
+            h1 {
+                font-size: 35px;
+            }
+
+            .subtitle {
+                font-size: 19px;
+
+                margin-bottom: 30px;
+            }
+
+            .stats {
+                gap: 12px;
+            }
+
+            .stat {
+                padding: 23px 10px;
+            }
+
+            .stat-number {
+                font-size: 30px;
+            }
+
+            .stat-label {
+                font-size: 17px;
+            }
+
+            .question-card {
+                padding: 18px;
+            }
+
+            .question {
+                font-size: 20px;
+            }
+
+            .option {
+                font-size: 16px;
+
+                padding: 15px;
+            }
+
+            .result-title {
+                font-size: 19px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- DARK MODE BUTTON -->
+
+    <div class="topbar">
+
+        <button
+            class="theme-btn"
+            id="themeBtn"
+            aria-label="Toggle dark mode"
+        >
+            🌙
+        </button>
+
+    </div>
+
+
+    <main class="container">
+
+
+        <!-- ================= HOME ================= -->
+
+        <section class="home" id="home">
+
+            <h1>Computer Objective Questions</h1>
+
+            <div class="subtitle">
+                Learn • Practice • Revise
+            </div>
+
+
+            <!-- STATS -->
+
+            <div class="stats">
+
+                <div class="stat">
+
+                    <div
+                        class="stat-number"
+                        id="questionCount"
+                    >
+                        0
+                    </div>
+
+                    <div class="stat-label">
+                        Questions
+                    </div>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <div
+                        class="stat-number"
+                        id="accuracy"
+                    >
+                        0%
+                    </div>
+
+                    <div class="stat-label">
+                        Accuracy
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- START -->
+
+            <button
+                class="main-btn"
+                id="startBtn"
+            >
+                Start Quiz
+            </button>
+
+
+            <!-- WRONG QUESTIONS -->
+
+            <button
+                class="secondary-btn"
+                id="wrongBtn"
+            >
+                Wrong Questions
+            </button>
+
+        </section>
+
+
+
+        <!-- ================= QUIZ ================= -->
+
+        <section
+            class="quiz"
+            id="quiz"
+        >
+
+
+            <!-- BACK -->
+
+            <button
+                class="back-btn"
+                id="backBtn"
+            >
+                ← Back
+            </button>
+
+
+            <!-- HEADER -->
+
+            <div class="quiz-header">
+
+                <span id="progress">
+                    Question 1
+                </span>
+
+                <span
+                    class="streak"
+                    id="streak"
+                >
+                    🔥 Streak: 0
+                </span>
+
+            </div>
+
+
+            <!-- 5 / 10 STREAK MESSAGE -->
+
+            <div
+                class="special-message"
+                id="specialMessage"
+            >
+            </div>
+
+
+            <!-- QUESTION -->
+
+            <div class="question-card">
+
+
+                <div
+                    class="question-number"
+                    id="questionNumber"
+                >
+                </div>
+
+
+                <div
+                    class="question"
+                    id="question"
+                >
+                </div>
+
+
+                <!-- OPTIONS -->
+
+                <div id="options"></div>
+
+
+                <!-- ANSWER RESULT -->
+
+                <div
+                    class="result"
+                    id="result"
+                >
+
+                    <div
+                        class="result-title"
+                        id="resultTitle"
+                    >
+                    </div>
+
+
+                    <div
+                        class="answer-info"
+                        id="answerInfo"
+                    >
+                    </div>
+
+
+                    <!-- EXPLANATION -->
+
+                    <div class="explanation">
+
+                        <div class="explanation-title">
+                            💡 Explanation
+                        </div>
+
+                        <div
+                            class="explanation-text"
+                            id="explanationText"
+                        >
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- NEXT -->
+
+                <button
+                    class="next-btn"
+                    id="nextBtn"
+                >
+                    Next Question →
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+<script>
+
+    /* =====================================================
+       VARIABLES
+    ===================================================== */
+
+    let allQuestions = [];
+
+    let quizQuestions = [];
+
+    let currentIndex = 0;
+
+    let currentQuestion = null;
+
+    let currentStreak = 0;
+
+    let answered = false;
+
+
+
+    /* =====================================================
+       DIFFERENT CORRECT MESSAGES
+    ===================================================== */
+
+    const correctMessages = [
+
+        "Correct! 🎯 Keep going!",
+
+        "Nice one! 😎 You got it!",
+
+        "Boom! 💥 That's correct!",
+
+        "Excellent! 🧠 Your memory is getting stronger!",
+
+        "Perfect! ✨ Keep this momentum!",
+
+        "Well done! 👏 Another one in the bag!",
+
+        "Great job! 🚀 You're on a roll!",
+
+        "Yes! 🔥 That's the right answer!",
+
+        "Sharp! ⚡ You remembered it!",
+
+        "Awesome! 🏆 Keep building that streak!",
+
+        "Nailed it! 🎯 One step closer!",
+
+        "Correct! 😄 Your practice is paying off!"
+
+    ];
+
+
+
+    /* =====================================================
+       DIFFERENT WRONG MESSAGES
+    ===================================================== */
+
+    const wrongMessages = [
+
+        "Oops! 😅 Not this one. Learn it and move on!",
+
+        "Almost! 🤔 Check the explanation carefully.",
+
+        "Not quite! 💭 Now you know the correct answer.",
+
+        "No worries! 💪 Mistakes help you remember.",
+
+        "Oops! 🫣 Add this one to your memory!",
+
+        "That's not it! 📚 Read the explanation once.",
+
+        "Missed this one! 🔍 But now it's learned.",
+
+        "Close! 😬 Don't worry, keep practicing!",
+
+        "Not this time! 🙂 The next one can be yours.",
+
+        "Small mistake! 🧠 This is exactly why we practice.",
+
+        "Wrong answer! 💡 Take a second to understand why.",
+
+        "No stress! 🌱 Every mistake is another revision point."
+
+    ];
+
+
+
+    /* =====================================================
+       5 STREAK MESSAGES
+    ===================================================== */
+
+    const fiveStreakMessages = [
+
+        "🔥 5 IN A ROW! You're building serious momentum!",
+
+        "🎯 Five correct! Your recall is getting stronger!",
+
+        "🚀 5-answer streak unlocked! Keep pushing!",
+
+        "🏅 Five straight! That's a great run!",
+
+        "🧠 5 correct answers back-to-back! Memory mode ON!"
+
+    ];
+
+
+
+    /* =====================================================
+       10 STREAK MESSAGES
+    ===================================================== */
+
+    const tenStreakMessages = [
+
+        "🏆 10 IN A ROW! DOUBLE DIGITS!",
+
+        "🚀 TEN-STREAK UNLOCKED! Your brain is on fire!",
+
+        "🔥🔥 10 consecutive correct answers! What a run!",
+
+        "👑 10 straight! You've entered BEAST MODE!",
+
+        "🎉 TEN! TEN! TEN! That's an incredible streak!"
+
+    ];
+
+
+
+    /* =====================================================
+       RANDOM MESSAGE
+    ===================================================== */
+
+    let lastCorrectMessage = -1;
+
+    let lastWrongMessage = -1;
+
+
+    function getRandomMessage(messages, lastIndex) {
+
+        let index;
+
+        do {
+
+            index =
+                Math.floor(
+                    Math.random() * messages.length
+                );
+
+        }
+        while (
+            messages.length > 1 &&
+            index === lastIndex
+        );
+
+
+        return {
+            text: messages[index],
+            index: index
+        };
+
+    }
+
+
+
+    /* =====================================================
+       LOAD JSON
+    ===================================================== */
+
+    async function loadQuestions() {
+
+        try {
+
+            const response =
+                await fetch("questions.json");
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "questions.json not found"
+                );
+
+            }
+
+
+            allQuestions =
+                await response.json();
+
+
+            updateStats();
+
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+
+            alert(
+                "Could not load questions.json.\n\n" +
+
+                "Make sure index.html and questions.json " +
+                "are in the same folder."
+            );
+
+        }
+
+    }
+
+
+
+    /* =====================================================
+       UPDATE HOME STATS
+    ===================================================== */
+
+    function updateStats() {
+
+        const answeredCount =
+            Number(
+                localStorage.getItem(
+                    "answeredCount"
+                ) || 0
+            );
+
+
+        const correctCount =
+            Number(
+                localStorage.getItem(
+                    "correctCount"
+                ) || 0
+            );
+
+
+        document.getElementById(
+            "questionCount"
+        ).textContent =
+            allQuestions.length;
+
+
+        const accuracy =
+            answeredCount > 0
+
+                ? Math.round(
+                    (correctCount / answeredCount) * 100
+                )
+
+                : 0;
+
+
+        document.getElementById(
+            "accuracy"
+        ).textContent =
+            accuracy + "%";
+
+    }
+
+
+
+    /* =====================================================
+       SHUFFLE
+    ===================================================== */
+
+    function shuffle(array) {
+
+        const copy =
+            [...array];
+
+
+        for (
+            let i = copy.length - 1;
+            i > 0;
+            i--
+        ) {
+
+            const j =
+                Math.floor(
+                    Math.random() * (i + 1)
+                );
+
+
+            [
+                copy[i],
+                copy[j]
+            ] =
+            [
+                copy[j],
+                copy[i]
+            ];
+
+        }
+
+
+        return copy;
+
+    }
+
+
+
+    /* =====================================================
+       START QUIZ
+    ===================================================== */
+
+    function startQuiz(type = "all") {
+
+        if (!allQuestions.length) {
+
+            alert(
+                "Questions are not loaded yet."
+            );
+
+            return;
+
+        }
+
+
+        /* WRONG QUESTIONS */
+
+        if (type === "wrong") {
+
+            quizQuestions =
+                JSON.parse(
+                    localStorage.getItem(
+                        "wrongQuestions"
+                    ) || "[]"
+                );
+
+
+            if (!quizQuestions.length) {
+
+                alert(
+                    "🎉 No wrong questions saved yet!"
+                );
+
+                return;
+
+            }
+
+        }
+
+
+        /* ALL QUESTIONS */
+
+        else {
+
+            quizQuestions =
+                allQuestions;
+
+        }
+
+
+        quizQuestions =
+            shuffle(quizQuestions);
+
+
+        currentIndex = 0;
+
+        currentStreak = 0;
+
+
+        document.getElementById(
+            "home"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "quiz"
+        ).style.display =
+            "block";
+
+
+        showQuestion();
+
+    }
+
+
+
+    /* =====================================================
+       SHOW QUESTION
+    ===================================================== */
+
+    function showQuestion() {
+
+        answered = false;
+
+
+        currentQuestion =
+            quizQuestions[currentIndex];
+
+
+        /* PROGRESS */
+
+        document.getElementById(
+            "progress"
+        ).textContent =
+
+            `Question ${
+                currentIndex + 1
+            } / ${
+                quizQuestions.length
+            }`;
+
+
+        /* STREAK */
+
+        document.getElementById(
+            "streak"
+        ).textContent =
+
+            `🔥 Streak: ${
+                currentStreak
+            }`;
+
+
+        /* QUESTION NUMBER */
+
+        document.getElementById(
+            "questionNumber"
+        ).textContent =
+
+            `Q${currentQuestion.question_number}`;
+
+
+        /* QUESTION */
+
+        document.getElementById(
+            "question"
+        ).textContent =
+
+            currentQuestion.question;
+
+
+
+        /* OPTIONS */
+
+        const optionsBox =
+            document.getElementById(
+                "options"
+            );
+
+
+        optionsBox.innerHTML = "";
+
+
+        Object.entries(
+            currentQuestion.options
+        ).forEach(
+            ([letter, text]) => {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                button.className =
+                    "option";
+
+
+                button.dataset.answer =
+                    letter;
+
+
+                button.textContent =
+                    `${letter}. ${text}`;
+
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        checkAnswer(
+                            letter
+                        );
+
+                    }
+                );
+
+
+                optionsBox.appendChild(
+                    button
+                );
+
+            }
+        );
+
+
+
+        /* RESET RESULT */
+
+        const result =
+            document.getElementById(
+                "result"
+            );
+
+
+        result.className =
+            "result";
+
+
+        result.style.display =
+            "none";
+
+
+        document.getElementById(
+            "resultTitle"
+        ).textContent = "";
+
+
+        document.getElementById(
+            "answerInfo"
+        ).textContent = "";
+
+
+        document.getElementById(
+            "explanationText"
+        ).textContent = "";
+
+
+        document.getElementById(
+            "nextBtn"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "specialMessage"
+        ).style.display =
+            "none";
+
+    }
+
+
+
+    /* =====================================================
+       CHECK ANSWER
+    ===================================================== */
+
+    function checkAnswer(
+        selectedAnswer
+    ) {
+
+        if (answered) {
+
+            return;
+
+        }
+
+
+        answered = true;
+
+
+        const isCorrect =
+
+            selectedAnswer ===
+            currentQuestion.answer;
+
+
+
+        /* DISABLE ALL OPTIONS */
+
+        document
+            .querySelectorAll(".option")
+            .forEach(
+                button => {
+
+                    button.disabled =
+                        true;
+
+
+                    /* SHOW CORRECT */
+
+                    if (
+                        button.dataset.answer ===
+                        currentQuestion.answer
+                    ) {
+
+                        button.classList.add(
+                            "correct"
+                        );
+
+                    }
+
+
+                    /* SHOW USER WRONG ANSWER */
+
+                    if (
+                        !isCorrect &&
+                        button.dataset.answer ===
+                        selectedAnswer
+                    ) {
+
+                        button.classList.add(
+                            "wrong"
+                        );
+
+                    }
+
+                }
+            );
+
+
+
+        /* =================================================
+           CORRECT
+        ================================================= */
+
+        if (isCorrect) {
+
+            currentStreak++;
+
+
+            const message =
+                getRandomMessage(
+                    correctMessages,
+                    lastCorrectMessage
+                );
+
+
+            lastCorrectMessage =
+                message.index;
+
+
+            document.getElementById(
+                "resultTitle"
+            ).textContent =
+                message.text;
+
+
+            document.getElementById(
+                "answerInfo"
+            ).textContent =
+
+                `Correct Answer: ${
+                    currentQuestion.answer
+                }. ${
+                    currentQuestion.options[
+                        currentQuestion.answer
+                    ]
+                }`;
+
+
+            document.getElementById(
+                "result"
+            ).className =
+                "result correct";
+
+
+
+            /* 5 STREAK */
+
+            if (
+                currentStreak === 5
+            ) {
+
+                const message =
+                    fiveStreakMessages[
+                        Math.floor(
+                            Math.random() *
+                            fiveStreakMessages.length
+                        )
+                    ];
+
+
+                const special =
+                    document.getElementById(
+                        "specialMessage"
+                    );
+
+
+                special.textContent =
+                    message;
+
+
+                special.style.display =
+                    "block";
+
+            }
+
+
+
+            /* 10 STREAK */
+
+            if (
+                currentStreak === 10
+            ) {
+
+                const message =
+                    tenStreakMessages[
+                        Math.floor(
+                            Math.random() *
+                            tenStreakMessages.length
+                        )
+                    ];
+
+
+                const special =
+                    document.getElementById(
+                        "specialMessage"
+                    );
+
+
+                special.textContent =
+                    message;
+
+
+                special.style.display =
+                    "block";
+
+            }
+
+        }
+
+
+
+        /* =================================================
+           WRONG
+        ================================================= */
+
+        else {
+
+            currentStreak = 0;
+
+
+            const message =
+                getRandomMessage(
+                    wrongMessages,
+                    lastWrongMessage
+                );
+
+
+            lastWrongMessage =
+                message.index;
+
+
+            document.getElementById(
+                "resultTitle"
+            ).textContent =
+                message.text;
+
+
+            document.getElementById(
+                "answerInfo"
+            ).textContent =
+
+                `Your Answer: ${
+                    selectedAnswer
+                }. ${
+                    currentQuestion.options[
+                        selectedAnswer
+                    ]
+                }
+
+Correct Answer: ${
+                    currentQuestion.answer
+                }. ${
+                    currentQuestion.options[
+                        currentQuestion.answer
+                    ]
+                }`;
+
+
+            document.getElementById(
+                "result"
+            ).className =
+                "result wrong";
+
+
+            document.getElementById(
+                "specialMessage"
+            ).style.display =
+                "none";
+
+        }
+
+
+
+        /* =================================================
+           UPDATE STREAK
+        ================================================= */
+
+        document.getElementById(
+            "streak"
+        ).textContent =
+
+            `🔥 Streak: ${
+                currentStreak
+            }`;
+
+
+
+        /* =================================================
+           SHOW EXPLANATION
+        ================================================= */
+
+        const explanation =
+
+            currentQuestion.explanation;
+
+
+        document.getElementById(
+            "explanationText"
+        ).textContent =
+
+            explanation && explanation.trim()
+
+                ? explanation
+
+                : "No explanation is available for this question.";
+
+
+
+        /* SHOW RESULT */
+
+        document.getElementById(
+            "result"
+        ).style.display =
+            "block";
+
+
+        /* SHOW NEXT */
+
+        document.getElementById(
+            "nextBtn"
+        ).style.display =
+            "block";
+
+
+
+        /* SAVE RESULT */
+
+        saveAnswer(
+            currentQuestion,
+            isCorrect
+        );
+
+    }
+
+
+
+    /* =====================================================
+       SAVE ANSWER
+    ===================================================== */
+
+    function saveAnswer(
+        question,
+        isCorrect
+    ) {
+
+        let answeredCount =
+            Number(
+                localStorage.getItem(
+                    "answeredCount"
+                ) || 0
+            );
+
+
+        let correctCount =
+            Number(
+                localStorage.getItem(
+                    "correctCount"
+                ) || 0
+            );
+
+
+        answeredCount++;
+
+
+        if (isCorrect) {
+
+            correctCount++;
+
+        }
+
+
+        localStorage.setItem(
+            "answeredCount",
+            answeredCount
+        );
+
+
+        localStorage.setItem(
+            "correctCount",
+            correctCount
+        );
+
+
+
+        /* WRONG QUESTIONS */
+
+        let wrongQuestions =
+            JSON.parse(
+                localStorage.getItem(
+                    "wrongQuestions"
+                ) || "[]"
+            );
+
+
+
+        /* SAVE WRONG */
+
+        if (!isCorrect) {
+
+            const alreadyExists =
+                wrongQuestions.some(
+                    q =>
+                        q.id === question.id
+                );
+
+
+            if (!alreadyExists) {
+
+                wrongQuestions.push(
+                    question
+                );
+
+            }
+
+        }
+
+
+
+        /* REMOVE WHEN ANSWERED CORRECTLY */
+
+        else {
+
+            wrongQuestions =
+                wrongQuestions.filter(
+                    q =>
+                        q.id !== question.id
+                );
+
+        }
+
+
+        localStorage.setItem(
+            "wrongQuestions",
+            JSON.stringify(
+                wrongQuestions
+            )
+        );
+
+
+        updateStats();
+
+    }
+
+
+
+    /* =====================================================
+       NEXT QUESTION
+    ===================================================== */
+
+    function nextQuestion() {
+
+        if (
+            currentIndex >=
+            quizQuestions.length - 1
+        ) {
+
+            showQuizComplete();
+
+            return;
+
+        }
+
+
+        currentIndex++;
+
+
+        showQuestion();
+
+    }
+
+
+
+    /* =====================================================
+       QUIZ COMPLETE
+    ===================================================== */
+
+    function showQuizComplete() {
+
+        const card =
+            document.querySelector(
+                ".question-card"
+            );
+
+
+        card.innerHTML = `
+
+            <div class="empty">
+
+                <div
+                    style="font-size:48px;"
+                >
+                    🎉
+                </div>
+
+                <h2>
+                    Quiz Complete!
+                </h2>
+
+                <p>
+                    You completed this set of questions.
+                </p>
+
+                <button
+                    class="main-btn"
+                    onclick="location.reload()"
+                >
+                    Practice Again
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+
+
+    /* =====================================================
+       DARK MODE
+    ===================================================== */
+
+    function applyTheme() {
+
+        const theme =
+            localStorage.getItem(
+                "theme"
+            ) || "light";
+
+
+        const isDark =
+            theme === "dark";
+
+
+        document.body.classList.toggle(
+            "dark",
+            isDark
+        );
+
+
+        document.getElementById(
+            "themeBtn"
+        ).textContent =
+
+            isDark
+                ? "☀️"
+                : "🌙";
+
+    }
+
+
+
+    document.getElementById(
+        "themeBtn"
+    ).addEventListener(
+        "click",
+        function () {
+
+            const isDark =
+                document.body.classList.contains(
+                    "dark"
+                );
+
+
+            localStorage.setItem(
+                "theme",
+                isDark
+                    ? "light"
+                    : "dark"
+            );
+
+
+            applyTheme();
+
+        }
+    );
+
+
+
+    /* =====================================================
+       BUTTONS
+    ===================================================== */
+
+    document.getElementById(
+        "startBtn"
+    ).addEventListener(
+        "click",
+        function () {
+
+            startQuiz("all");
+
+        }
+    );
+
+
+    document.getElementById(
+        "wrongBtn"
+    ).addEventListener(
+        "click",
+        function () {
+
+            startQuiz("wrong");
+
+        }
+    );
+
+
+    document.getElementById(
+        "nextBtn"
+    ).addEventListener(
+        "click",
+        nextQuestion
+    );
+
+
+    document.getElementById(
+        "backBtn"
+    ).addEventListener(
+        "click",
+        function () {
+
+            location.reload();
+
+        }
+    );
+
+
+
+    /* =====================================================
+       START APP
+    ===================================================== */
+
+    applyTheme();
+
+    loadQuestions();
+
+</script>
+
+</body>
+</html>
